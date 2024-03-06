@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '16.x'
+  displayName: 'Install Node.js'
+
+- script: npm install
+  displayName: 'Install dependencies'
+
+- script: ls -al $(Build.SourcesDirectory)
+  displayName: 'List directories for debug'
+
+- script: npm run build
+  displayName: 'Build SvelteKit App'
+
+- script: ls -al $(Build.SourcesDirectory)
+  displayName: 'List directories for debug'
+
+- task: AzureStaticWebApp@0
+  inputs:
+    app_location: '/'         
+    api_location: 'api'       
+    output_location: 'build'  
+    azure_static_web_apps_api_token: $(deployment_token)
